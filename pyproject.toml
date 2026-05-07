@@ -1,0 +1,17 @@
+[project]
+name = "test-junior"
+version = "0.1.0"
+description = "Сервис по авторизации пользователя"
+readme = "README.md"
+requires-python = ">=3.12.7"
+dependencies = [
+    "fastapi>=0.116.1",
+    "granian[uvloop]>=2.6.1",
+    "psycopg2-binary>=2.9.11",
+    "pydantic-settings>=2.10.1",
+    "pyjwt>=2.10.1",
+    "argon2-cffi>=25.1.0",
+    "asyncpg>=0.30.0",
+    "orjson>=3.11.1",
+    "yoyo-migrations>=9.0.0",
+]
