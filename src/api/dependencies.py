@@ -1,15 +1,15 @@
 from collections.abc import Awaitable, Callable
+from uuid import UUID
 
 import jwt
 from fastapi import Request, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from uuid import UUID
 
 from src.api.v1.schemas.context import AuthUser
 from src.core.exceptions import ForbiddenError, UnauthorizedError
 from src.domain.entities.account import AccountRole
 from src.services.account_service import AccountService
-from src.services.auth_service import AuthService
+from src.services.auth_service import ACCESS_TOKEN_TYPE, AuthService, decode_token
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
@@ -34,23 +34,22 @@ def require_role(*allowed_roles: AccountRole) -> Callable[[Request], Awaitable[A
         token = credentials.credentials.strip()
         if not token:
             raise UnauthorizedError("Missing bearer token")
-        secret_key = request.app.state.container.config.app.SECRET_KEY
+
+        secret_key = request.app.state.container.config.app.SECRET_KEY.get_secret_value()
         try:
-            payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+            payload = decode_token(token, secret_key, ACCESS_TOKEN_TYPE)
             account_id = UUID(payload["sub"])
             role = payload["role"]
-            token_type = payload["type"]
-        except (jwt.InvalidTokenError, KeyError, ValueError) as exc:
+        except (KeyError, ValueError) as exc:
             raise UnauthorizedError("Invalid access token") from exc
-        if token_type != "access":
-            raise UnauthorizedError("Invalid token type")
+
         account = await request.app.state.container.repos.account_repository.get_by_id(account_id)
         if account is None or not account.is_active:
             raise UnauthorizedError("Account is deactivated")
+
         user = AuthUser(account_id=account_id, role=role)
         if user.role not in allowed:
             raise ForbiddenError("Insufficient role")
         return user
 
     return _dependency
-

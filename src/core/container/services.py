@@ -29,7 +29,7 @@ class ServiceContainer:
             self._auth_service = AuthService(
                 account_repository=self._repos.account_repository,
                 auth_repository=self._repos.auth_repository,
-                secret_key=self._infra.config.app.SECRET_KEY,
+                secret_key=self._infra.config.app.SECRET_KEY.get_secret_value(),
                 access_ttl_minutes=self._infra.config.app.AUTH_ACCESS_TOKEN_TTL_MINUTES,
                 refresh_ttl_days=self._infra.config.app.AUTH_REFRESH_TOKEN_TTL_DAYS,
                 logger=self._logger

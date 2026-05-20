@@ -19,9 +19,7 @@ class AccountService:
         return account
 
     async def list_accounts(self, limit: int = 50, offset: int = 0) -> list[Account]:
-        safe_limit = max(1, min(limit, 200))
-        safe_offset = max(0, offset)
-        return await self._account_repository.list_accounts(limit=safe_limit, offset=safe_offset)
+        return await self._account_repository.list_accounts(limit=limit, offset=offset)
 
     async def update_profile(self, account_id: UUID, first_name: str, last_name: str) -> Account:
         updated = await self._account_repository.update_profile(

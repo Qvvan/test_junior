@@ -5,10 +5,7 @@ class AppError(Exception):
     """Базовое исключение приложения"""
     http_status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    __slots__ = [
-        "code",
-        "message"
-    ]
+    __slots__ = ("code", "message")
 
     def __init__(self, message: str, code: str = "UNKNOWN_ERROR"):
         self.message = message

@@ -15,7 +15,7 @@ class Account:
     password_hash: str
     first_name: str = ""
     last_name: str = ""
-    role: str = AccountRole.USER
+    role: AccountRole = AccountRole.USER
     is_active: bool = True
     id: UUID | None = None
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))

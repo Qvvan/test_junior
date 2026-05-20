@@ -19,7 +19,6 @@ class InfrastructureContainer:
                 host=self._config.postgres.HOST,
                 port=self._config.postgres.PORT,
                 database=self._config.postgres.DATABASE,
-                echo=self._config.postgres.ECHO,
                 pool_size=self._config.postgres.POOL_SIZE,
             )
         return self._postgres

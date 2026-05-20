@@ -46,7 +46,7 @@ class PostgresAuthRepository(IAuthRepository):
               AND revoked_at IS NULL
         """
         result = await self._query_executor.execute(query, jti)
-        return result.endswith("1")
+        return result == "UPDATE 1"
 
     async def revoke_all_refresh_tokens_for_account(self, account_id: UUID) -> int:
         query = """

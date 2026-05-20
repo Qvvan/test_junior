@@ -12,7 +12,8 @@ from src.api.v1.schemas.auth import (
     RegisterRequest,
     TokenPairResponse,
 )
-from src.domain.entities.account import AccountRole
+from src.domain.entities.account import Account, AccountRole
+from src.domain.entities.auth import TokenPair
 from src.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -50,11 +51,7 @@ async def refresh(
     auth_service: AuthService = Depends(get_auth_service),
 ) -> TokenPairResponse:
     tokens = await auth_service.refresh(request.refresh_token)
-    return TokenPairResponse(
-        access_token=tokens.access_token,
-        refresh_token=tokens.refresh_token,
-        token_type=tokens.token_type,
-    )
+    return TokenPairResponse.model_validate(tokens)
 
 
 @router.post("/change-password", response_model=MessageResponse)
@@ -81,17 +78,9 @@ async def logout(
     return MessageResponse(message="Logged out")
 
 
-def _build_auth_response(account, tokens) -> AuthResponse:
+def _build_auth_response(account: Account, tokens: TokenPair) -> AuthResponse:
+    assert account.id is not None
     return AuthResponse(
-        account=AccountPublicResponse(
-            id=str(account.id),
-            login=account.login,
-            first_name=account.first_name,
-            last_name=account.last_name,
-        ),
-        tokens=TokenPairResponse(
-            access_token=tokens.access_token,
-            refresh_token=tokens.refresh_token,
-            token_type=tokens.token_type,
-        ),
+        account=AccountPublicResponse.model_validate(account),
+        tokens=TokenPairResponse.model_validate(tokens),
     )

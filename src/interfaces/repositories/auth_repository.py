@@ -13,17 +13,13 @@ class IAuthRepository(ABC):
         account_id: UUID,
         token_hash: str,
         expires_at: datetime,
-    ) -> RefreshTokenRecord:
-        raise NotImplementedError
+    ) -> RefreshTokenRecord: ...
 
     @abstractmethod
-    async def get_refresh_token_by_jti(self, jti: UUID) -> RefreshTokenRecord | None:
-        raise NotImplementedError
+    async def get_refresh_token_by_jti(self, jti: UUID) -> RefreshTokenRecord | None: ...
 
     @abstractmethod
-    async def revoke_refresh_token(self, jti: UUID) -> bool:
-        raise NotImplementedError
+    async def revoke_refresh_token(self, jti: UUID) -> bool: ...
 
     @abstractmethod
-    async def revoke_all_refresh_tokens_for_account(self, account_id: UUID) -> int:
-        raise NotImplementedError
+    async def revoke_all_refresh_tokens_for_account(self, account_id: UUID) -> int: ...
