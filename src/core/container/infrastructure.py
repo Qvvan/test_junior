@@ -30,11 +30,9 @@ class InfrastructureContainer:
             self._query_executor = PostgresQueryExecutor(connection_pool=self.postgres_db)
         return self._query_executor
 
-
     @property
     def config(self) -> Config:
         return self._config
-
 
     async def closer(self) -> None:
         if self._postgres:

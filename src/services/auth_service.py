@@ -7,6 +7,7 @@ import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
 
+from src.core.logger import AppLogger
 from src.core.exceptions import ConflictError, NotFoundError, UnauthorizedError, ValidationError
 from src.domain.entities.account import Account
 from src.domain.entities.auth import TokenPair
@@ -22,6 +23,7 @@ class AuthService:
         self,
         account_repository: IAccountRepository,
         auth_repository: IAuthRepository,
+        logger: AppLogger,
         secret_key: str,
         access_ttl_minutes: int = 15,
         refresh_ttl_days: int = 30,
@@ -29,6 +31,7 @@ class AuthService:
         self._account_repository = account_repository
         self._auth_repository = auth_repository
         self._secret_key = secret_key
+        self._logger = logger
         self._access_ttl = timedelta(minutes=access_ttl_minutes)
         self._refresh_ttl = timedelta(days=refresh_ttl_days)
 

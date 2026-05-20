@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 from dotenv import load_dotenv
 from pydantic import Field, SecretStr
@@ -10,6 +11,14 @@ class ConfigBase(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore"
     )
+
+
+class LoggingConfig(ConfigBase):
+    """Настройки логирования"""
+    model_config = SettingsConfigDict(env_prefix="LOG_", frozen=True)
+
+    LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    JSON_FORMAT: bool = True
 
 
 class PostgresConfig(ConfigBase):
@@ -43,6 +52,7 @@ class Config(ConfigBase):
 
     app: AppConfig = Field(default_factory=AppConfig)
     postgres: PostgresConfig = Field(default_factory=PostgresConfig)
+    logging: LoggingConfig = Field(default_factory=LoggingConfig)
 
     @classmethod
     def load(cls, env_file: str | Path = ".env") -> "Config":

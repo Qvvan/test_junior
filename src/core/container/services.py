@@ -1,3 +1,4 @@
+from src.core.logger import AppLogger
 from src.core.container.infrastructure import InfrastructureContainer
 from src.core.container.repositories import RepositoryContainer
 from src.services import AccountService, AuthService
@@ -5,9 +6,10 @@ from src.services import AccountService, AuthService
 
 class ServiceContainer:
 
-    def __init__(self, repos: RepositoryContainer, infra: InfrastructureContainer):
+    def __init__(self, logger: AppLogger, repos: RepositoryContainer, infra: InfrastructureContainer):
         self._infra = infra
         self._repos = repos
+        self._logger = logger
         self._account_service: AccountService | None = None
         self._auth_service: AuthService | None = None
 
@@ -17,6 +19,7 @@ class ServiceContainer:
             self._account_service = AccountService(
                 account_repository=self._repos.account_repository,
                 auth_repository=self._repos.auth_repository,
+                logger=self._logger
             )
         return self._account_service
 
@@ -29,5 +32,6 @@ class ServiceContainer:
                 secret_key=self._infra.config.app.SECRET_KEY,
                 access_ttl_minutes=self._infra.config.app.AUTH_ACCESS_TOKEN_TTL_MINUTES,
                 refresh_ttl_days=self._infra.config.app.AUTH_REFRESH_TOKEN_TTL_DAYS,
+                logger=self._logger
             )
         return self._auth_service

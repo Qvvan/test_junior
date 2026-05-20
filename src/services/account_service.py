@@ -1,12 +1,14 @@
 from uuid import UUID
 
+from src.core.logger import AppLogger
 from src.core.exceptions import NotFoundError
 from src.domain.entities.account import Account
 from src.interfaces.repositories import IAccountRepository, IAuthRepository
 
 
 class AccountService:
-    def __init__(self, account_repository: IAccountRepository, auth_repository: IAuthRepository) -> None:
+    def __init__(self, logger: AppLogger, account_repository: IAccountRepository, auth_repository: IAuthRepository) -> None:
+        self._logger = logger
         self._account_repository = account_repository
         self._auth_repository = auth_repository
 

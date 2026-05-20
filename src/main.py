@@ -3,9 +3,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from src.api import router
 from src.api.exception_handlers import register_errors
+from src.api.middleware.request_logging import RequestLoggingMiddleware
 from src.core.config import Config
 from src.core.container import Container
 
@@ -43,12 +45,18 @@ def create_app() -> FastAPI:
         allow_origins=["*"],
         allow_methods=["*"],
         allow_headers=["*"],
-        allow_credentials=True,
+    )
+
+    app.add_middleware(
+        RequestLoggingMiddleware,  #type: ignore
+        logger=container.logger,
     )
 
     app.state.container = container
 
     app.include_router(router, prefix="/api")
     register_errors(app)
+
+    Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
     return app
